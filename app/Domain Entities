@@ -1,0 +1,200 @@
+// Personality.kt
+package com.xos.personalsystem.domain.entities
+
+data class Personality(
+    val id: String,
+    val name: String,
+    val type: PersonalityType,
+    val isActive: Boolean = false,
+    val orderIndex: Int = 0,
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
+)
+
+enum class PersonalityType {
+    XOS, NORMAL
+}
+
+// Goal.kt
+data class Goal(
+    val id: String,
+    val personalityId: String,
+    val name: String,
+    val description: String = "",
+    val orderIndex: Int = 0,
+    val deadline: Long = 0,
+    val isCompleted: Boolean = false,
+    val completedAt: Long = 0,
+    val isActive: Boolean = true,
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
+)
+
+// Level.kt
+data class Level(
+    val id: String,
+    val goalId: String,
+    val levelNumber: Int,
+    val name: String = "",
+    val description: String = "",
+    val requiredTasksCount: Int = 1,
+    val orderIndex: Int = 0,
+    val isActive: Boolean = true,
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
+)
+
+// Task.kt
+data class Task(
+    val id: String,
+    val levelId: String,
+    val title: String,
+    val description: String = "",
+    val taskType: TaskType,
+    val difficulty: Difficulty,
+    val estimatedDuration: Int = 30,
+    val deadline: Long = 0,
+    val isRequired: Boolean = true,
+    val requiresAIVerification: Boolean = false,
+    val recurrence: RecurrenceType = RecurrenceType.ONCE,
+    val aiVerificationPrompt: String = "",
+    val isActive: Boolean = true,
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
+)
+
+enum class TaskType {
+    THEORETICAL, PRACTICAL
+}
+
+enum class Difficulty {
+    EASY, MEDIUM, HARD, EXPERT
+}
+
+enum class RecurrenceType {
+    ONCE, DAILY, WEEKLY
+}
+
+// TaskCompletion.kt
+data class TaskCompletion(
+    val id: String,
+    val taskId: String,
+    val personalityId: String,
+    val completionDate: Long = System.currentTimeMillis(),
+    val status: CompletionStatus,
+    val aiVerificationResult: String = "",
+    val aiVerificationScore: Float = 0f,
+    val attemptsCount: Int = 0,
+    val lastAttemptDate: Long = 0,
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+enum class CompletionStatus {
+    PENDING, PASSED, FAILED, SKIPPED
+}
+
+// Progression.kt
+data class Progression(
+    val id: String,
+    val personalityId: String,
+    val goalId: String,
+    val levelId: String,
+    val progressPercentage: Float = 0f,
+    val completedTasksCount: Int = 0,
+    val totalTasksCount: Int = 0,
+    val currentStreak: Int = 0,
+    val highestStreak: Int = 0,
+    val consecutiveFailures: Int = 0,
+    val totalFailures: Int = 0,
+    val levelDrops: Int = 0,
+    val highestLevelReached: Int = 0,
+    val currentLevelNumber: Int = 1,
+    val isWarningActive: Boolean = false,
+    val updatedAt: Long = System.currentTimeMillis(),
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+// Achievement.kt
+data class Achievement(
+    val id: String,
+    val personalityId: String,
+    val title: String,
+    val description: String = "",
+    val icon: String = "",
+    val requirement: String = "",
+    val isUnlocked: Boolean = false,
+    val unlockedAt: Long = 0,
+    val progress: Float = 0f,
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+// JournalEntry.kt
+data class JournalEntry(
+    val id: String,
+    val personalityId: String,
+    val title: String = "",
+    val content: String = "",
+    val entryType: EntryType,
+    val mediaPath: String = "",
+    val goalId: String = "",
+    val levelId: String = "",
+    val date: Long = System.currentTimeMillis(),
+    val tags: List<String> = emptyList(),
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+enum class EntryType {
+    TEXT, IMAGE, AUDIO, VIDEO
+}
+
+// Lesson.kt
+data class Lesson(
+    val id: String,
+    val personalityId: String,
+    val title: String,
+    val content: String = "",
+    val whatWasLearned: String = "",
+    val notes: String = "",
+    val importantInfo: String = "",
+    val goalId: String = "",
+    val levelId: String = "",
+    val date: Long = System.currentTimeMillis(),
+    val orderIndex: Int = 0,
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+// Notification.kt
+data class XOSNotification(
+    val id: String,
+    val personalityId: String = "",
+    val title: String,
+    val message: String,
+    val type: NotificationType,
+    val isRead: Boolean = false,
+    val isDismissed: Boolean = false,
+    val metadata: Map<String, String> = emptyMap(),
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+enum class NotificationType {
+    SYSTEM, WARNING, ACHIEVEMENT, DAILY_TASK, LEVEL_CHANGE
+}
+
+// FocusApp.kt
+data class FocusApp(
+    val id: String,
+    val packageName: String,
+    val appName: String,
+    val isBlocked: Boolean = true,
+    val icon: String = "",
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+// SystemConfig.kt
+data class SystemConfig(
+    val id: String,
+    val key: String,
+    val value: String,
+    val description: String = "",
+    val updatedAt: Long = System.currentTimeMillis()
+)

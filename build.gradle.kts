@@ -7,9 +7,6 @@ plugins {
     id("org.jetbrains.kotlin.kapt") version "1.9.22" apply false
     id("com.google.devtools.ksp") version "1.9.22-1.0.16" apply false
 }
-
-buildscript {
-    repositories {
         google()
         mavenCentral()
     }
@@ -19,8 +16,6 @@ buildscript {
     }
 }
 
-allprojects {
-    repositories {
         google()
         mavenCentral()
     }

@@ -1,0 +1,15 @@
+// Tovush effekti
+private fun playTissSound(context: Context) {
+    val audioAttributes = android.media.AudioAttributes.Builder()
+        .setUsage(android.media.AudioAttributes.USAGE_NOTIFICATION)
+        .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
+        .build()
+    
+    val soundPool = android.media.SoundPool.Builder()
+        .setMaxStreams(1)
+        .setAudioAttributes(audioAttributes)
+        .build()
+    
+    // "TISS" tovushini yaratish (dasturiy)
+    // yoki res/raw dan yuklash
+}

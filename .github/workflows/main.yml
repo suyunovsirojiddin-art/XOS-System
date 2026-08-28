@@ -5,7 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch:   # ⬅️ BU QATOR QO'SHILGAN BO'LISHI KERAK!
+  workflow_dispatch:
 
 jobs:
   build:
@@ -23,7 +23,10 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
       with:
-        gradle-version: 8.6   # ⬅️ 8.6 GA O'ZGARTIRILGAN!
+        gradle-version: 8.4
     
-    - name: Clean and Refresh Dependencies
-      run: gradle clean build --refresh-dependencies --stacktrace   # ⬅️ YANGI BUYRUK!
+    - name: Clean Project
+      run: gradle clean --stacktrace
+    
+    - name: Build with Gradle
+      run: gradle build --stacktrace

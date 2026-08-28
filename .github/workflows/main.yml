@@ -23,19 +23,9 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
       with:
-        gradle-version: 8.4
+        gradle-version: 8.2  # ⬅️ 8.2 ga qaytdik
     
-    - name: Clean Gradle Cache
+    - name: Build with Gradle Wrapper
       run: |
-        rm -rf ~/.gradle/caches/
-        rm -rf .gradle/
-    
-    - name: Clean Project
-      run: gradle clean --no-daemon --stacktrace
-    
-    - name: Build with Gradle
-      run: gradle build --no-daemon --stacktrace
-    
-    - name: Run Tests
-      run: gradle test --no-daemon --stacktrace
-      
+        chmod +x gradlew
+        ./gradlew build --no-daemon --stacktrace

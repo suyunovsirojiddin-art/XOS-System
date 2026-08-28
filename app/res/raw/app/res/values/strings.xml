@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">XOS Personal System</string>
+    <string name="system">System</string>
+    <string name="tasks">Tasks</string>
+    <string name="goals">Goals</string>
+    <string name="levels">Levels</string>
+    <string name="progress">Progress</string>
+    <string name="achievements">Achievements</string>
+    <string name="journal">Journal</string>
+    <string name="lessons">Lessons</string>
+    <string name="admin">Admin</string>
+    <string name="settings">Settings</string>
+    <string name="backup">Backup</string>
+    <string name="restore">Restore</string>
+    <string name="focus_mode">Focus Mode</string>
+    <string name="alarm">Alarm</string>
+    
+    <!-- Notification Channels -->
+    <string name="channel_system">XOS System</string>
+    <string name="channel_system_desc">XOS System notifications</string>
+    <string name="channel_tasks">XOS Tasks</string>
+    <string name="channel_tasks_desc">Daily task notifications</string>
+    <string name="channel_alarm">XOS Alarm</string>
+    <string name="channel_alarm_desc">Wake-up alarm notifications</string>
+    <string name="channel_achievements">XOS Achievements</string>
+    <string name="channel_achievements_desc">Achievement notifications</string>
+    
+    <!-- Permissions -->
+    <string name="permission_notifications_title">Notifications</string>
+    <string name="permission_notifications_message">XOS needs notification permission to send system alerts and task reminders.</string>
+    <string name="permission_usage_stats_title">Usage Access</string>
+    <string name="permission_usage_stats_message">XOS needs usage access to enable Focus Mode functionality.</string>
+</resources>

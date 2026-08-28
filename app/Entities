@@ -1,0 +1,226 @@
+// PersonalityEntity.kt
+package com.xos.personalsystem.data.local.entities
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import java.util.UUID
+
+@Entity(tableName = "personalities")
+data class PersonalityEntity(
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
+    val name: String,
+    val type: String, // "XOS" or "NORMAL"
+    val isActive: Boolean = false,
+    val orderIndex: Int = 0,
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
+)
+
+// GoalEntity.kt
+@Entity(tableName = "goals")
+data class GoalEntity(
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
+    val personalityId: String,
+    val name: String,
+    val description: String = "",
+    val orderIndex: Int = 0,
+    val deadline: Long = 0,
+    val isCompleted: Boolean = false,
+    val completedAt: Long = 0,
+    val isActive: Boolean = true,
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
+)
+
+// LevelEntity.kt
+@Entity(tableName = "levels")
+data class LevelEntity(
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
+    val goalId: String,
+    val levelNumber: Int,
+    val name: String = "",
+    val description: String = "",
+    val requiredTasksCount: Int = 1,
+    val orderIndex: Int = 0,
+    val isActive: Boolean = true,
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
+)
+
+// TaskEntity.kt
+@Entity(tableName = "tasks")
+data class TaskEntity(
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
+    val levelId: String,
+    val title: String,
+    val description: String = "",
+    val taskType: String, // "THEORETICAL" or "PRACTICAL"
+    val difficulty: String, // "EASY", "MEDIUM", "HARD", "EXPERT"
+    val estimatedDuration: Int = 30, // minutes
+    val deadline: Long = 0,
+    val isRequired: Boolean = true,
+    val requiresAIVerification: Boolean = false,
+    val recurrence: String = "ONCE", // "ONCE", "DAILY", "WEEKLY"
+    val aiVerificationPrompt: String = "",
+    val isActive: Boolean = true,
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
+)
+
+// TaskCompletionEntity.kt
+@Entity(tableName = "task_completions")
+data class TaskCompletionEntity(
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
+    val taskId: String,
+    val personalityId: String,
+    val completionDate: Long = System.currentTimeMillis(),
+    val status: String, // "PENDING", "PASSED", "FAILED", "SKIPPED"
+    val aiVerificationResult: String = "",
+    val aiVerificationScore: Float = 0f,
+    val attemptsCount: Int = 0,
+    val lastAttemptDate: Long = 0,
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+// ProgressionEntity.kt
+@Entity(tableName = "progressions")
+data class ProgressionEntity(
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
+    val personalityId: String,
+    val goalId: String,
+    val levelId: String,
+    val progressPercentage: Float = 0f,
+    val completedTasksCount: Int = 0,
+    val totalTasksCount: Int = 0,
+    val currentStreak: Int = 0,
+    val highestStreak: Int = 0,
+    val consecutiveFailures: Int = 0,
+    val totalFailures: Int = 0,
+    val levelDrops: Int = 0,
+    val highestLevelReached: Int = 0,
+    val currentLevelNumber: Int = 1,
+    val isWarningActive: Boolean = false,
+    val updatedAt: Long = System.currentTimeMillis(),
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+// ProgressionHistoryEntity.kt
+@Entity(tableName = "progression_history")
+data class ProgressionHistoryEntity(
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
+    val personalityId: String,
+    val eventType: String, // "LEVEL_UP", "LEVEL_DOWN", "FAILURE", "WARNING", "TASK_COMPLETE"
+    val levelNumber: Int,
+    val details: String = "",
+    val metadata: String = "{}", // JSON
+    val timestamp: Long = System.currentTimeMillis()
+)
+
+// AchievementEntity.kt
+@Entity(tableName = "achievements")
+data class AchievementEntity(
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
+    val personalityId: String,
+    val title: String,
+    val description: String = "",
+    val icon: String = "",
+    val requirement: String = "",
+    val isUnlocked: Boolean = false,
+    val unlockedAt: Long = 0,
+    val progress: Float = 0f,
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+// JournalEntryEntity.kt
+@Entity(tableName = "journal_entries")
+data class JournalEntryEntity(
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
+    val personalityId: String,
+    val title: String = "",
+    val content: String = "",
+    val entryType: String, // "TEXT", "IMAGE", "AUDIO", "VIDEO"
+    val mediaPath: String = "",
+    val goalId: String = "",
+    val levelId: String = "",
+    val date: Long = System.currentTimeMillis(),
+    val tags: String = "[]", // JSON array
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+// LessonEntity.kt
+@Entity(tableName = "lessons")
+data class LessonEntity(
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
+    val personalityId: String,
+    val title: String,
+    val content: String = "",
+    val whatWasLearned: String = "",
+    val notes: String = "",
+    val importantInfo: String = "",
+    val goalId: String = "",
+    val levelId: String = "",
+    val date: Long = System.currentTimeMillis(),
+    val orderIndex: Int = 0,
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+// SystemConfigEntity.kt
+@Entity(tableName = "system_config")
+data class SystemConfigEntity(
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
+    val key: String,
+    val value: String, // JSON
+    val description: String = "",
+    val updatedAt: Long = System.currentTimeMillis()
+)
+
+// NotificationEntity.kt
+@Entity(tableName = "notifications")
+data class NotificationEntity(
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
+    val personalityId: String = "",
+    val title: String,
+    val message: String,
+    val type: String, // "SYSTEM", "WARNING", "ACHIEVEMENT", "DAILY_TASK", "LEVEL_CHANGE"
+    val isRead: Boolean = false,
+    val isDismissed: Boolean = false,
+    val metadata: String = "{}", // JSON
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+// FocusAppEntity.kt
+@Entity(tableName = "focus_apps")
+data class FocusAppEntity(
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
+    val packageName: String,
+    val appName: String,
+    val isBlocked: Boolean = true,
+    val icon: String = "", // Base64
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+// BackupEntity.kt
+@Entity(tableName = "backups")
+data class BackupEntity(
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
+    val fileName: String,
+    val filePath: String,
+    val size: Long = 0,
+    val version: String = "1.0.0",
+    val metadata: String = "{}", // JSON
+    val createdAt: Long = System.currentTimeMillis()
+)

@@ -1,0 +1,331 @@
+// PersonalityDao.kt
+package com.xos.personalsystem.data.local.dao
+
+import androidx.room.*
+import com.xos.personalsystem.data.local.entities.PersonalityEntity
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface PersonalityDao {
+    @Query("SELECT * FROM personalities ORDER BY orderIndex ASC")
+    fun getAll(): Flow<List<PersonalityEntity>>
+
+    @Query("SELECT * FROM personalities WHERE id = :id")
+    suspend fun getById(id: String): PersonalityEntity?
+
+    @Query("SELECT * FROM personalities WHERE type = 'XOS'")
+    suspend fun getXOS(): PersonalityEntity?
+
+    @Query("SELECT * FROM personalities WHERE isActive = 1")
+    suspend fun getActive(): PersonalityEntity?
+
+    @Insert
+    suspend fun insert(personality: PersonalityEntity): Long
+
+    @Update
+    suspend fun update(personality: PersonalityEntity)
+
+    @Delete
+    suspend fun delete(personality: PersonalityEntity)
+
+    @Query("UPDATE personalities SET isActive = 0")
+    suspend fun clearActive()
+
+    @Query("UPDATE personalities SET isActive = 1 WHERE id = :id")
+    suspend fun setActive(id: String)
+}
+
+// GoalDao.kt
+@Dao
+interface GoalDao {
+    @Query("SELECT * FROM goals WHERE personalityId = :personalityId ORDER BY orderIndex ASC")
+    fun getAllForPersonality(personalityId: String): Flow<List<GoalEntity>>
+
+    @Query("SELECT * FROM goals WHERE id = :id")
+    suspend fun getById(id: String): GoalEntity?
+
+    @Query("SELECT * FROM goals WHERE personalityId = :personalityId AND isCompleted = 0 ORDER BY orderIndex ASC LIMIT 1")
+    suspend fun getCurrentGoal(personalityId: String): GoalEntity?
+
+    @Insert
+    suspend fun insert(goal: GoalEntity): Long
+
+    @Update
+    suspend fun update(goal: GoalEntity)
+
+    @Delete
+    suspend fun delete(goal: GoalEntity)
+
+    @Query("SELECT COUNT(*) FROM goals WHERE personalityId = :personalityId AND isCompleted = 0")
+    suspend fun getIncompleteCount(personalityId: String): Int
+}
+
+// LevelDao.kt
+@Dao
+interface LevelDao {
+    @Query("SELECT * FROM levels WHERE goalId = :goalId ORDER BY orderIndex ASC")
+    fun getAllForGoal(goalId: String): Flow<List<LevelEntity>>
+
+    @Query("SELECT * FROM levels WHERE id = :id")
+    suspend fun getById(id: String): LevelEntity?
+
+    @Query("SELECT * FROM levels WHERE goalId = :goalId ORDER BY orderIndex ASC LIMIT 1")
+    suspend fun getFirstLevel(goalId: String): LevelEntity?
+
+    @Query("SELECT * FROM levels WHERE goalId = :goalId AND levelNumber = :levelNumber")
+    suspend fun getByLevelNumber(goalId: String, levelNumber: Int): LevelEntity?
+
+    @Insert
+    suspend fun insert(level: LevelEntity): Long
+
+    @Update
+    suspend fun update(level: LevelEntity)
+
+    @Delete
+    suspend fun delete(level: LevelEntity)
+}
+
+// TaskDao.kt
+@Dao
+interface TaskDao {
+    @Query("SELECT * FROM tasks WHERE levelId = :levelId AND isActive = 1 ORDER BY createdAt ASC")
+    fun getAllForLevel(levelId: String): Flow<List<TaskEntity>>
+
+    @Query("SELECT * FROM tasks WHERE id = :id")
+    suspend fun getById(id: String): TaskEntity?
+
+    @Query("SELECT * FROM tasks WHERE levelId IN (SELECT id FROM levels WHERE goalId = :goalId) AND isActive = 1")
+    suspend fun getAllForGoal(goalId: String): List<TaskEntity>
+
+    @Insert
+    suspend fun insert(task: TaskEntity): Long
+
+    @Update
+    suspend fun update(task: TaskEntity)
+
+    @Delete
+    suspend fun delete(task: TaskEntity)
+
+    @Query("SELECT * FROM tasks WHERE recurrence = 'DAILY' AND isActive = 1")
+    suspend fun getDailyTasks(): List<TaskEntity>
+}
+
+// TaskCompletionDao.kt
+@Dao
+interface TaskCompletionDao {
+    @Query("SELECT * FROM task_completions WHERE taskId = :taskId AND personalityId = :personalityId")
+    suspend fun getByTaskAndPersonality(taskId: String, personalityId: String): TaskCompletionEntity?
+
+    @Query("SELECT * FROM task_completions WHERE personalityId = :personalityId AND completionDate >= :date")
+    suspend fun getForDate(personalityId: String, date: Long): List<TaskCompletionEntity>
+
+    @Query("SELECT * FROM task_completions WHERE personalityId = :personalityId AND status = 'PENDING'")
+    suspend fun getPending(personalityId: String): List<TaskCompletionEntity>
+
+    @Query("SELECT * FROM task_completions WHERE personalityId = :personalityId AND status = 'FAILED' AND completionDate >= :date")
+    suspend fun getFailedForDate(personalityId: String, date: Long): List<TaskCompletionEntity>
+
+    @Insert
+    suspend fun insert(completion: TaskCompletionEntity): Long
+
+    @Update
+    suspend fun update(completion: TaskCompletionEntity)
+
+    @Query("SELECT COUNT(*) FROM task_completions WHERE personalityId = :personalityId AND status = 'PASSED' AND completionDate >= :date")
+    suspend fun getCompletedCountForDate(personalityId: String, date: Long): Int
+
+    @Query("SELECT COUNT(*) FROM task_completions WHERE personalityId = :personalityId AND status = 'PENDING' AND completionDate >= :date")
+    suspend fun getPendingCountForDate(personalityId: String, date: Long): Int
+}
+
+// ProgressionDao.kt
+@Dao
+interface ProgressionDao {
+    @Query("SELECT * FROM progressions WHERE personalityId = :personalityId")
+    suspend fun getByPersonality(personalityId: String): ProgressionEntity?
+
+    @Insert
+    suspend fun insert(progression: ProgressionEntity): Long
+
+    @Update
+    suspend fun update(progression: ProgressionEntity)
+
+    @Query("DELETE FROM progressions WHERE personalityId = :personalityId")
+    suspend fun deleteByPersonality(personalityId: String)
+}
+
+// ProgressionHistoryDao.kt
+@Dao
+interface ProgressionHistoryDao {
+    @Query("SELECT * FROM progression_history WHERE personalityId = :personalityId ORDER BY timestamp DESC")
+    fun getAllForPersonality(personalityId: String): Flow<List<ProgressionHistoryEntity>>
+
+    @Query("SELECT * FROM progression_history WHERE personalityId = :personalityId ORDER BY timestamp DESC LIMIT :limit")
+    suspend fun getRecent(personalityId: String, limit: Int): List<ProgressionHistoryEntity>
+
+    @Insert
+    suspend fun insert(history: ProgressionHistoryEntity): Long
+
+    @Query("DELETE FROM progression_history WHERE personalityId = :personalityId AND timestamp < :before")
+    suspend fun deleteOlderThan(personalityId: String, before: Long)
+}
+
+// AchievementDao.kt
+@Dao
+interface AchievementDao {
+    @Query("SELECT * FROM achievements WHERE personalityId = :personalityId")
+    fun getAllForPersonality(personalityId: String): Flow<List<AchievementEntity>>
+
+    @Query("SELECT * FROM achievements WHERE personalityId = :personalityId AND isUnlocked = 1")
+    suspend fun getUnlocked(personalityId: String): List<AchievementEntity>
+
+    @Query("SELECT * FROM achievements WHERE personalityId = :personalityId AND isUnlocked = 0")
+    suspend fun getLocked(personalityId: String): List<AchievementEntity>
+
+    @Insert
+    suspend fun insert(achievement: AchievementEntity): Long
+
+    @Update
+    suspend fun update(achievement: AchievementEntity)
+
+    @Query("SELECT COUNT(*) FROM achievements WHERE personalityId = :personalityId AND isUnlocked = 1")
+    suspend fun getUnlockedCount(personalityId: String): Int
+}
+
+// JournalEntryDao.kt
+@Dao
+interface JournalEntryDao {
+    @Query("SELECT * FROM journal_entries WHERE personalityId = :personalityId ORDER BY date DESC")
+    fun getAllForPersonality(personalityId: String): Flow<List<JournalEntryEntity>>
+
+    @Query("SELECT * FROM journal_entries WHERE id = :id")
+    suspend fun getById(id: String): JournalEntryEntity?
+
+    @Query("SELECT * FROM journal_entries WHERE personalityId = :personalityId AND goalId = :goalId ORDER BY date DESC")
+    suspend fun getForGoal(personalityId: String, goalId: String): List<JournalEntryEntity>
+
+    @Insert
+    suspend fun insert(entry: JournalEntryEntity): Long
+
+    @Update
+    suspend fun update(entry: JournalEntryEntity)
+
+    @Delete
+    suspend fun delete(entry: JournalEntryEntity)
+
+    @Query("DELETE FROM journal_entries WHERE id = :id")
+    suspend fun deleteById(id: String)
+}
+
+// LessonDao.kt
+@Dao
+interface LessonDao {
+    @Query("SELECT * FROM lessons WHERE personalityId = :personalityId ORDER BY date DESC")
+    fun getAllForPersonality(personalityId: String): Flow<List<LessonEntity>>
+
+    @Query("SELECT * FROM lessons WHERE id = :id")
+    suspend fun getById(id: String): LessonEntity?
+
+    @Query("SELECT * FROM lessons WHERE personalityId = :personalityId AND goalId = :goalId ORDER BY date DESC")
+    suspend fun getForGoal(personalityId: String, goalId: String): List<LessonEntity>
+
+    @Insert
+    suspend fun insert(lesson: LessonEntity): Long
+
+    @Update
+    suspend fun update(lesson: LessonEntity)
+
+    @Delete
+    suspend fun delete(lesson: LessonEntity)
+}
+
+// SystemConfigDao.kt
+@Dao
+interface SystemConfigDao {
+    @Query("SELECT * FROM system_config WHERE key = :key")
+    suspend fun getByKey(key: String): SystemConfigEntity?
+
+    @Query("SELECT * FROM system_config")
+    fun getAll(): Flow<List<SystemConfigEntity>>
+
+    @Insert
+    suspend fun insert(config: SystemConfigEntity): Long
+
+    @Update
+    suspend fun update(config: SystemConfigEntity)
+
+    @Query("DELETE FROM system_config WHERE key = :key")
+    suspend fun deleteByKey(key: String)
+}
+
+// NotificationDao.kt
+@Dao
+interface NotificationDao {
+    @Query("SELECT * FROM notifications ORDER BY createdAt DESC")
+    fun getAll(): Flow<List<NotificationEntity>>
+
+    @Query("SELECT * FROM notifications WHERE personalityId = :personalityId ORDER BY createdAt DESC")
+    fun getAllForPersonality(personalityId: String): Flow<List<NotificationEntity>>
+
+    @Query("SELECT * FROM notifications WHERE id = :id")
+    suspend fun getById(id: String): NotificationEntity?
+
+    @Query("SELECT * FROM notifications WHERE isRead = 0 AND isDismissed = 0 ORDER BY createdAt DESC")
+    suspend fun getUnread(): List<NotificationEntity>
+
+    @Insert
+    suspend fun insert(notification: NotificationEntity): Long
+
+    @Update
+    suspend fun update(notification: NotificationEntity)
+
+    @Query("UPDATE notifications SET isRead = 1 WHERE id = :id")
+    suspend fun markAsRead(id: String)
+
+    @Query("UPDATE notifications SET isDismissed = 1 WHERE id = :id")
+    suspend fun dismiss(id: String)
+}
+
+// FocusAppDao.kt
+@Dao
+interface FocusAppDao {
+    @Query("SELECT * FROM focus_apps ORDER BY appName ASC")
+    fun getAll(): Flow<List<FocusAppEntity>>
+
+    @Query("SELECT * FROM focus_apps WHERE isBlocked = 1")
+    suspend fun getBlocked(): List<FocusAppEntity>
+
+    @Query("SELECT * FROM focus_apps WHERE packageName = :packageName")
+    suspend fun getByPackage(packageName: String): FocusAppEntity?
+
+    @Insert
+    suspend fun insert(app: FocusAppEntity): Long
+
+    @Update
+    suspend fun update(app: FocusAppEntity)
+
+    @Delete
+    suspend fun delete(app: FocusAppEntity)
+
+    @Query("DELETE FROM focus_apps")
+    suspend fun deleteAll()
+}
+
+// BackupDao.kt
+@Dao
+interface BackupDao {
+    @Query("SELECT * FROM backups ORDER BY createdAt DESC")
+    fun getAll(): Flow<List<BackupEntity>>
+
+    @Query("SELECT * FROM backups WHERE id = :id")
+    suspend fun getById(id: String): BackupEntity?
+
+    @Insert
+    suspend fun insert(backup: BackupEntity): Long
+
+    @Delete
+    suspend fun delete(backup: BackupEntity)
+
+    @Query("DELETE FROM backups WHERE id = :id")
+    suspend fun deleteById(id: String)
+}
